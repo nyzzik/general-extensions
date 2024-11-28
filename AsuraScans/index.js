@@ -17712,17 +17712,17 @@ var source = (() => {
         status = "Ongoing";
         break;
     }
-    const titles = [Application.decodeHTMLEntities(title)];
+    const titles = [title];
     return {
       mangaId,
       mangaInfo: {
         primaryTitle: titles.shift(),
         secondaryTitles: titles,
         status,
-        author: Application.decodeHTMLEntities(author),
-        artist: Application.decodeHTMLEntities(artist),
+        author,
+        artist,
         tagGroups: tagSections,
-        synopsis: Application.decodeHTMLEntities(description),
+        synopsis: description,
         thumbnailUrl: image,
         contentRating: import_types3.ContentRating.EVERYONE
       }
@@ -17776,7 +17776,7 @@ var source = (() => {
         continue;
       featuredSection_Array.push({
         imageUrl: image,
-        title: Application.decodeHTMLEntities(title),
+        title,
         mangaId: id,
         type: "featuredCarouselItem"
       });
@@ -17797,9 +17797,9 @@ var source = (() => {
         continue;
       updateSection_Array.push({
         imageUrl: image,
-        title: Application.decodeHTMLEntities(title),
+        title,
         mangaId: id,
-        subtitle: Application.decodeHTMLEntities(subtitle),
+        subtitle,
         type: "prominentCarouselItem"
       });
     }
@@ -17819,8 +17819,8 @@ var source = (() => {
         continue;
       popularSection_Array.push({
         imageUrl: image,
-        title: Application.decodeHTMLEntities(title),
-        chapterId: Application.decodeHTMLEntities(subtitle),
+        title,
+        chapterId: subtitle,
         mangaId: id,
         type: "chapterUpdatesCarouselItem"
       });
@@ -17878,7 +17878,7 @@ var source = (() => {
       const subtitle = $2("span.block.font-bold", item).first().next().text().trim() ?? "";
       itemArray.push({
         imageUrl: image,
-        title: Application.decodeHTMLEntities(title),
+        title,
         mangaId: id,
         subtitle
       });
