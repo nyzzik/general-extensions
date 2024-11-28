@@ -17712,17 +17712,17 @@ var source = (() => {
         status = "Ongoing";
         break;
     }
-    const titles = [title];
+    const titles = [load(title).text()];
     return {
       mangaId,
       mangaInfo: {
         primaryTitle: titles.shift(),
         secondaryTitles: titles,
         status,
-        author,
-        artist,
+        author: load(author).text(),
+        artist: load(artist).text(),
         tagGroups: tagSections,
-        synopsis: description,
+        synopsis: load(description).text(),
         thumbnailUrl: image,
         contentRating: import_types3.ContentRating.EVERYONE
       }
@@ -17776,7 +17776,7 @@ var source = (() => {
         continue;
       featuredSection_Array.push({
         imageUrl: image,
-        title,
+        title: load(title).text(),
         mangaId: id,
         type: "featuredCarouselItem"
       });
@@ -17797,9 +17797,9 @@ var source = (() => {
         continue;
       updateSection_Array.push({
         imageUrl: image,
-        title,
+        title: load(title).text(),
         mangaId: id,
-        subtitle,
+        subtitle: load(subtitle).text(),
         type: "prominentCarouselItem"
       });
     }
@@ -17819,8 +17819,8 @@ var source = (() => {
         continue;
       popularSection_Array.push({
         imageUrl: image,
-        title,
-        chapterId: subtitle,
+        title: load(title).text(),
+        chapterId: load(subtitle).text(),
         mangaId: id,
         type: "chapterUpdatesCarouselItem"
       });
@@ -17878,7 +17878,7 @@ var source = (() => {
       const subtitle = $2("span.block.font-bold", item).first().next().text().trim() ?? "";
       itemArray.push({
         imageUrl: image,
-        title,
+        title: load(title).text(),
         mangaId: id,
         subtitle
       });
