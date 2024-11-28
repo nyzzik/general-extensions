@@ -17712,17 +17712,17 @@ var source = (() => {
         status = "Ongoing";
         break;
     }
-    const titles = [load(title).text()];
+    const titles = [Application.decodeHTMLEntities(title)];
     return {
       mangaId,
       mangaInfo: {
         primaryTitle: titles.shift(),
         secondaryTitles: titles,
         status,
-        author: load(author).text(),
-        artist: load(artist).text(),
+        author: Application.decodeHTMLEntities(author),
+        artist: Application.decodeHTMLEntities(artist),
         tagGroups: tagSections,
-        synopsis: load(description).text(),
+        synopsis: Application.decodeHTMLEntities(description),
         thumbnailUrl: image,
         contentRating: import_types3.ContentRating.EVERYONE
       }
@@ -17776,7 +17776,7 @@ var source = (() => {
         continue;
       featuredSection_Array.push({
         imageUrl: image,
-        title: load(title).text(),
+        title: Application.decodeHTMLEntities(title),
         mangaId: id,
         type: "featuredCarouselItem"
       });
@@ -17797,9 +17797,9 @@ var source = (() => {
         continue;
       updateSection_Array.push({
         imageUrl: image,
-        title: load(title).text(),
+        title: Application.decodeHTMLEntities(title),
         mangaId: id,
-        subtitle: load(subtitle).text(),
+        subtitle: Application.decodeHTMLEntities(subtitle),
         type: "prominentCarouselItem"
       });
     }
@@ -17819,8 +17819,8 @@ var source = (() => {
         continue;
       popularSection_Array.push({
         imageUrl: image,
-        title: load(title).text(),
-        chapterId: load(subtitle).text(),
+        title: Application.decodeHTMLEntities(title),
+        chapterId: Application.decodeHTMLEntities(subtitle),
         mangaId: id,
         type: "chapterUpdatesCarouselItem"
       });
@@ -17878,7 +17878,7 @@ var source = (() => {
       const subtitle = $2("span.block.font-bold", item).first().next().text().trim() ?? "";
       itemArray.push({
         imageUrl: image,
-        title: load(title).text(),
+        title: Application.decodeHTMLEntities(title),
         mangaId: id,
         subtitle
       });
