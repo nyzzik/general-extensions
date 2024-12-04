@@ -17557,6 +17557,40 @@ var source = (() => {
   var parse5 = getParse((content, options, isDocument2, context) => options._useHtmlParser2 ? parseDocument(content, options) : parseWithParse5(content, options, isDocument2, context));
   var load = getLoad(parse5, (dom, options) => options._useHtmlParser2 ? esm_default(dom, options) : renderWithParse5(dom));
 
+  // src/utils/url-builder.ts
+  init_buffer();
+  var URLBuilder = class {
+    baseUrl;
+    queryParams = {};
+    pathSegments = [];
+    constructor(baseUrl) {
+      this.baseUrl = baseUrl.replace(/\/+$/, "");
+    }
+    path(segment) {
+      this.pathSegments.push(segment.replace(/^\/+|\/+$/g, ""));
+      return this;
+    }
+    query(key, value) {
+      this.queryParams[key] = value;
+      return this;
+    }
+    build() {
+      const fullPath = this.pathSegments.length > 0 ? `/${this.pathSegments.join("/")}` : "";
+      const queryString = Object.entries(this.queryParams).flatMap(([key, value]) => {
+        if (Array.isArray(value)) {
+          return value.length > 0 ? value.map((v) => `${key}=${v}`) : [];
+        }
+        return value === "" ? [] : [`${key}=${value}`];
+      }).join("&");
+      return queryString ? `${this.baseUrl}${fullPath}?${queryString}` : `${this.baseUrl}${fullPath}`;
+    }
+    reset() {
+      this.queryParams = {};
+      this.pathSegments = [];
+      return this;
+    }
+  };
+
   // src/AsuraScans/AsuraConfig.ts
   init_buffer();
   var AS_DOMAIN = "https://asuracomic.net";
@@ -17878,40 +17912,6 @@ var source = (() => {
     }
   };
 
-  // src/utils/url-builder.ts
-  init_buffer();
-  var URLBuilder = class {
-    baseUrl;
-    queryParams = {};
-    pathSegments = [];
-    constructor(baseUrl) {
-      this.baseUrl = baseUrl.replace(/\/+$/, "");
-    }
-    path(segment) {
-      this.pathSegments.push(segment.replace(/^\/+|\/+$/g, ""));
-      return this;
-    }
-    query(key, value) {
-      this.queryParams[key] = value;
-      return this;
-    }
-    build() {
-      const fullPath = this.pathSegments.length > 0 ? `/${this.pathSegments.join("/")}` : "";
-      const queryString = Object.entries(this.queryParams).flatMap(([key, value]) => {
-        if (Array.isArray(value)) {
-          return value.length > 0 ? value.map((v) => `${key}=${v}`) : [];
-        }
-        return value === "" ? [] : [`${key}=${value}`];
-      }).join("&");
-      return queryString ? `${this.baseUrl}${fullPath}?${queryString}` : `${this.baseUrl}${fullPath}`;
-    }
-    reset() {
-      this.queryParams = {};
-      this.pathSegments = [];
-      return this;
-    }
-  };
-
   // src/AsuraScans/main.ts
   var AsuraScansExtension = class {
     globalRateLimiter = new import_types5.BasicRateLimiter("ratelimiter", {
@@ -18167,16 +18167,7 @@ var source = (() => {
           includedTags.push(tag[0]);
         }
       }
-      newUrlBuilder = newUrlBuilder.query(
-        "genres",
-        getFilterTagsBySection("genres", includedTags)
-      ).query(
-        "status",
-        getFilterTagsBySection("status", includedTags)
-      ).query("types", getFilterTagsBySection("type", includedTags)).query(
-        "order",
-        getFilterTagsBySection("order", includedTags)
-      );
+      newUrlBuilder = newUrlBuilder.query("genres", getFilterTagsBySection("genres", includedTags)).query("status", getFilterTagsBySection("status", includedTags)).query("types", getFilterTagsBySection("type", includedTags)).query("order", getFilterTagsBySection("order", includedTags));
       const response = await Application.scheduleRequest({
         url: newUrlBuilder.build(),
         method: "GET"
