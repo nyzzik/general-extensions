@@ -16732,37 +16732,6 @@ var source = (() => {
   init_buffer();
   var import_types4 = __toESM(require_lib(), 1);
 
-  // src/AsuraScans/AsuraUtils.ts
-  init_buffer();
-  async function setFilters(data2) {
-    for (const genre of data2.genres) {
-      Application.setState(genre.id.toString(), genre.name.toUpperCase());
-    }
-  }
-  async function getFilter(filter4) {
-    const genre = await Application.getState(filter4.toUpperCase()) ?? "";
-    return genre.toString();
-  }
-  async function getMangaId(slug) {
-    const id = idCleaner(slug);
-    const gotSlug = await Application.getState(id) ?? "";
-    if (!gotSlug) {
-      Application.setState(id, slug);
-      return slug;
-    }
-    return gotSlug;
-  }
-  function idCleaner(str) {
-    let cleanId = str;
-    cleanId = cleanId.replace(/\/$/, "");
-    cleanId = cleanId.split("/").pop() ?? null;
-    cleanId = cleanId?.substring(0, cleanId?.lastIndexOf("-")) ?? null;
-    if (!cleanId) {
-      throw new Error(`Unable to parse id for ${str}`);
-    }
-    return cleanId;
-  }
-
   // src/AsuraScans/AsuraSettings.ts
   init_buffer();
   var import_types3 = __toESM(require_lib(), 1);
@@ -16819,6 +16788,37 @@ var source = (() => {
       setShowUpcomingChapters(value);
     }
   };
+
+  // src/AsuraScans/AsuraUtils.ts
+  init_buffer();
+  async function setFilters(data2) {
+    for (const genre of data2.genres) {
+      Application.setState(genre.id.toString(), genre.name.toUpperCase());
+    }
+  }
+  async function getFilter(filter4) {
+    const genre = await Application.getState(filter4.toUpperCase()) ?? "";
+    return genre.toString();
+  }
+  async function getMangaId(slug) {
+    const id = idCleaner(slug);
+    const gotSlug = await Application.getState(id) ?? "";
+    if (!gotSlug) {
+      Application.setState(id, slug);
+      return slug;
+    }
+    return gotSlug;
+  }
+  function idCleaner(str) {
+    let cleanId = str;
+    cleanId = cleanId.replace(/\/$/, "");
+    cleanId = cleanId.split("/").pop() ?? null;
+    cleanId = cleanId?.substring(0, cleanId?.lastIndexOf("-")) ?? null;
+    if (!cleanId) {
+      throw new Error(`Unable to parse id for ${str}`);
+    }
+    return cleanId;
+  }
 
   // src/AsuraScans/AsuraParser.ts
   var parseMangaDetails = async ($2, mangaId) => {
