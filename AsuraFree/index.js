@@ -16707,7 +16707,7 @@ var source = (() => {
   // src/AsuraFree/AsuraFreeInterceptor.ts
   init_buffer();
   var import_types2 = __toESM(require_lib(), 1);
-  var AsuraInterceptor = class extends import_types2.PaperbackInterceptor {
+  var AsuraFreeInterceptor = class extends import_types2.PaperbackInterceptor {
     async interceptRequest(request) {
       request.headers = {
         ...request.headers,
@@ -16959,7 +16959,7 @@ var source = (() => {
       bufferInterval: 0.5,
       ignoreImages: true
     });
-    requestManager = new AsuraInterceptor("main");
+    requestManager = new AsuraFreeInterceptor("main");
     async initialise() {
       this.globalRateLimiter.registerInterceptor();
       this.requestManager.registerInterceptor();
