@@ -17176,10 +17176,7 @@ var source = (() => {
           encodeURIComponent(query?.title.replace(/[’‘´`'-][a-z]*/g, "%") ?? "a")
         );
       } else {
-        newUrlBuilder = newUrlBuilder.addQuery(
-          "s",
-          "a"
-        );
+        newUrlBuilder = newUrlBuilder.addQuery("s", "a");
       }
       const response = await Application.scheduleRequest({
         url: newUrlBuilder.build(),
