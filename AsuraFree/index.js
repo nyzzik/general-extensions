@@ -1932,7 +1932,7 @@ var source = (() => {
       init_buffer();
       Object.defineProperty(exports, "__esModule", { value: true });
       exports.Form = void 0;
-      var Form2 = class {
+      var Form = class {
         reloadForm() {
           const formId = this["__underlying_formId"];
           if (!formId)
@@ -1940,7 +1940,7 @@ var source = (() => {
           Application.formDidChange(formId);
         }
       };
-      exports.Form = Form2;
+      exports.Form = Form;
     }
   });
 
@@ -2668,22 +2668,22 @@ var source = (() => {
       init_buffer();
       Object.defineProperty(exports, "__esModule", { value: true });
       exports.ContentRating = exports.SourceIntents = void 0;
-      var SourceIntents2;
-      (function(SourceIntents3) {
-        SourceIntents3[SourceIntents3["MANGA_CHAPTERS"] = 1] = "MANGA_CHAPTERS";
-        SourceIntents3[SourceIntents3["MANGA_TRACKING"] = 2] = "MANGA_TRACKING";
-        SourceIntents3[SourceIntents3["HOMEPAGE_SECTIONS"] = 4] = "HOMEPAGE_SECTIONS";
-        SourceIntents3[SourceIntents3["COLLECTION_MANAGEMENT"] = 8] = "COLLECTION_MANAGEMENT";
-        SourceIntents3[SourceIntents3["CLOUDFLARE_BYPASS_REQUIRED"] = 16] = "CLOUDFLARE_BYPASS_REQUIRED";
-        SourceIntents3[SourceIntents3["SETTINGS_UI"] = 32] = "SETTINGS_UI";
-        SourceIntents3[SourceIntents3["MANGA_SEARCH"] = 64] = "MANGA_SEARCH";
-      })(SourceIntents2 || (exports.SourceIntents = SourceIntents2 = {}));
-      var ContentRating3;
-      (function(ContentRating4) {
-        ContentRating4["EVERYONE"] = "SAFE";
-        ContentRating4["MATURE"] = "MATURE";
-        ContentRating4["ADULT"] = "ADULT";
-      })(ContentRating3 || (exports.ContentRating = ContentRating3 = {}));
+      var SourceIntents;
+      (function(SourceIntents2) {
+        SourceIntents2[SourceIntents2["MANGA_CHAPTERS"] = 1] = "MANGA_CHAPTERS";
+        SourceIntents2[SourceIntents2["MANGA_TRACKING"] = 2] = "MANGA_TRACKING";
+        SourceIntents2[SourceIntents2["HOMEPAGE_SECTIONS"] = 4] = "HOMEPAGE_SECTIONS";
+        SourceIntents2[SourceIntents2["COLLECTION_MANAGEMENT"] = 8] = "COLLECTION_MANAGEMENT";
+        SourceIntents2[SourceIntents2["CLOUDFLARE_BYPASS_REQUIRED"] = 16] = "CLOUDFLARE_BYPASS_REQUIRED";
+        SourceIntents2[SourceIntents2["SETTINGS_UI"] = 32] = "SETTINGS_UI";
+        SourceIntents2[SourceIntents2["MANGA_SEARCH"] = 64] = "MANGA_SEARCH";
+      })(SourceIntents || (exports.SourceIntents = SourceIntents = {}));
+      var ContentRating2;
+      (function(ContentRating3) {
+        ContentRating3["EVERYONE"] = "SAFE";
+        ContentRating3["MATURE"] = "MATURE";
+        ContentRating3["ADULT"] = "ADULT";
+      })(ContentRating2 || (exports.ContentRating = ContentRating2 = {}));
     }
   });
 
@@ -17098,7 +17098,7 @@ var source = (() => {
         url: new URLBuilder2(AS_DOMAIN).addPath("serie").addPath(mangaId).build(),
         method: "GET"
       };
-      const [status, buffer] = await Application.scheduleRequest(request);
+      const [_, buffer] = await Application.scheduleRequest(request);
       const $2 = load(Application.arrayBufferToUTF8String(buffer));
       return await parseMangaDetails($2, mangaId);
     }
