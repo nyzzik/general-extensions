@@ -16682,6 +16682,45 @@ var source = (() => {
       return chapter;
     });
   };
+  var parseChapterDetails = async ($2, mangaId, chapterId) => {
+    const pages = [];
+    const readerScript = $2("script").filter((i, el) => {
+      return $2(el).html()?.includes("ts_reader.run");
+    });
+    if (!readerScript) {
+      throw new Error(`Failed to find page details script for manga ${mangaId}`);
+    }
+    const scriptMatch = readerScript.html()?.match(/ts_reader\.run\((.*?(?=\);|},))/);
+    let scriptStr = "";
+    let scriptObj = {
+      sources: []
+    };
+    if (scriptMatch && scriptMatch[1]) {
+      scriptStr = scriptMatch[1];
+    }
+    if (!scriptStr) {
+      throw new Error(`Failed to parse script for manga ${mangaId}`);
+    }
+    if (!scriptStr.endsWith("}")) {
+      scriptStr = scriptStr + "}";
+    }
+    scriptObj = JSON.parse(scriptStr);
+    console.log(typeof scriptObj);
+    console.log(Object.keys(scriptObj));
+    if (!scriptObj?.sources) {
+      throw new Error(`Failed for find sources property for manga ${mangaId}`);
+    }
+    for (const index2 of scriptObj.sources) {
+      if (index2?.images.length == 0) continue;
+      index2.images.map((p) => pages.push(encodeURI(p.trim())));
+    }
+    const chapterDetails = {
+      id: chapterId,
+      mangaId,
+      pages
+    };
+    return chapterDetails;
+  };
   var parseFeaturedSection = async ($2) => {
     const featuredSection_Array = [];
     for (const manga of $2("a", "div.popconslide").toArray()) {
@@ -16893,22 +16932,12 @@ var source = (() => {
         method: "GET"
       };
       const [, buffer] = await Application.scheduleRequest(request);
-      const result = await Application.executeInWebView({
-        source: {
-          html: Application.arrayBufferToUTF8String(buffer),
-          baseUrl: ASF_DOMAIN,
-          loadCSS: false,
-          loadImages: false
-        },
-        inject: "const array = Array.from(document.querySelectorAll('img.ts-main-image'));const imgSrcArray = Array.from(array).map(img => img.src); return imgSrcArray;",
-        storage: { cookies: [] }
-      });
-      const pages = result.result;
-      return {
-        mangaId: chapter.sourceManga.mangaId,
-        id: chapter.chapterId,
-        pages
-      };
+      const $2 = load(Application.arrayBufferToUTF8String(buffer));
+      return parseChapterDetails(
+        $2,
+        chapter.sourceManga.mangaId,
+        chapter.chapterId
+      );
     }
     async supportsTagExclusion() {
       return false;
