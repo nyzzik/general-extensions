@@ -16757,8 +16757,7 @@ var source = (() => {
         tagGroups: tagSections,
         synopsis: load(description).text(),
         thumbnailUrl: image,
-        contentRating: import_types4.ContentRating.EVERYONE,
-        shareUrl: new URLBuilder(AS_DOMAIN).addPath("series").addPath(mangaId).build()
+        contentRating: import_types4.ContentRating.EVERYONE
       }
     };
   };
