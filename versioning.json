@@ -1,8 +1,8 @@
 {
-  "buildTime": "2025-01-31T09:43:56.744Z",
+  "buildTime": "2025-01-31T22:08:47.593Z",
   "builtWith": {
-    "toolchain": "1.0.0-alpha.33",
-    "types": "1.0.0-alpha.33"
+    "toolchain": "1.0.0-alpha.31",
+    "types": "1.0.0-alpha.31"
   },
   "repository": {
     "description": "An extension repository for Paperback",
@@ -10,9 +10,26 @@
   },
   "sources": [
     {
+      "name": "Asura Scans Free",
+      "description": "The asurascansfree.com extension.",
+      "version": "1.0.1",
+      "icon": "icon.png",
+      "language": "en",
+      "contentRating": "MATURE",
+      "badges": [],
+      "capabilities": 69,
+      "developers": [
+        {
+          "name": "nyzzik",
+          "github": "https://github.com/nyzzik"
+        }
+      ],
+      "id": "AsuraFree"
+    },
+    {
       "name": "Asura Scans",
       "description": "The asuracomic.net extension.",
-      "version": "1.4.0",
+      "version": "1.1.1",
       "icon": "icon.png",
       "language": "en",
       "contentRating": "MATURE",
@@ -25,23 +42,6 @@
         }
       ],
       "id": "AsuraScans"
-    },
-    {
-      "name": "Asura Scans Free",
-      "description": "The asurascansfree.com extension.",
-      "version": "1.1.0",
-      "icon": "icon.png",
-      "language": "en",
-      "contentRating": "MATURE",
-      "badges": [],
-      "capabilities": 85,
-      "developers": [
-        {
-          "name": "nyzzik",
-          "github": "https://github.com/nyzzik"
-        }
-      ],
-      "id": "AsuraScansFree"
     },
     {
       "icon": "icon.png",
