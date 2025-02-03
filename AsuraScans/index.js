@@ -2221,7 +2221,7 @@ var source = (() => {
         set cookies(newValue) {
           const cookies = {};
           for (const cookie of newValue) {
-            if (cookie.expires && cookie.expires.getUTCMilliseconds() <= Date.now()) {
+            if (this.isCookieExpired(cookie)) {
               continue;
             }
             cookies[this.cookieIdentifier(cookie)] = cookie;
@@ -2296,7 +2296,7 @@ var source = (() => {
             let pathMatches = 0;
             if (pathname === cookiePath) {
               pathMatches = Number.MAX_SAFE_INTEGER;
-            } else if (splitUrlPath.length === 0) {
+            } else if (splitUrlPath.length === 0 || pathname === "") {
               pathMatches = 1;
             } else if (cookiePath.startsWith(pathname) && splitUrlPath.length >= splitCookiePath.length) {
               for (let i = 0; i < splitUrlPath.length; i++) {
@@ -2326,7 +2326,7 @@ var source = (() => {
           return cookie.domain.startsWith(".") ? cookie.domain.slice(1) : cookie.domain;
         }
         isCookieExpired(cookie) {
-          if (cookie.expires && cookie.expires.getUTCMilliseconds() <= Date.now()) {
+          if (cookie.expires && cookie.expires.getTime() <= Date.now()) {
             return true;
           } else {
             return false;
@@ -16686,13 +16686,8 @@ var source = (() => {
     return genre.toString();
   }
   async function getMangaId(slug) {
-    const id = idCleaner(slug);
-    const gotSlug = await Application.getState(id) ?? "";
-    if (!gotSlug) {
-      Application.setState(id, slug);
-      return slug;
-    }
-    return gotSlug;
+    const id = idCleaner(slug) + "-";
+    return id;
   }
   function idCleaner(str) {
     let cleanId = str;
@@ -16757,7 +16752,8 @@ var source = (() => {
         tagGroups: tagSections,
         synopsis: load(description).text(),
         thumbnailUrl: image,
-        contentRating: import_types4.ContentRating.EVERYONE
+        contentRating: import_types4.ContentRating.EVERYONE,
+        shareUrl: new URLBuilder(AS_DOMAIN).addPath("series").addPath(mangaId).build()
       }
     };
   };
@@ -16987,22 +16983,35 @@ var source = (() => {
         urlBuilder = urlBuilder.addPath("series");
         urlBuilder = urlBuilder.addQuery("page", page.toString());
       }
-      const [_, buffer] = await Application.scheduleRequest({
-        url: urlBuilder.build(),
-        method: "GET"
-      });
-      const $2 = load(Application.arrayBufferToUTF8String(buffer));
       switch (section.type) {
-        case import_types5.DiscoverSectionType.featured:
+        case import_types5.DiscoverSectionType.featured: {
+          const [_, buffer] = await Application.scheduleRequest({
+            url: urlBuilder.build(),
+            method: "GET"
+          });
+          const $2 = load(Application.arrayBufferToUTF8String(buffer));
           items = await parseFeaturedSection($2);
           break;
-        case import_types5.DiscoverSectionType.chapterUpdates:
+        }
+        case import_types5.DiscoverSectionType.chapterUpdates: {
+          const [_, buffer] = await Application.scheduleRequest({
+            url: urlBuilder.build(),
+            method: "GET"
+          });
+          const $2 = load(Application.arrayBufferToUTF8String(buffer));
           items = await parsePopularSection($2);
           break;
-        case import_types5.DiscoverSectionType.simpleCarousel:
+        }
+        case import_types5.DiscoverSectionType.simpleCarousel: {
+          const [_, buffer] = await Application.scheduleRequest({
+            url: urlBuilder.build(),
+            method: "GET"
+          });
+          const $2 = load(Application.arrayBufferToUTF8String(buffer));
           items = await parseUpdateSection($2);
           metadata = !isLastPage($2) ? { page: page + 1 } : void 0;
           break;
+        }
         case import_types5.DiscoverSectionType.genres:
           if (section.id === "type") {
             items = [];
@@ -17104,17 +17113,19 @@ var source = (() => {
         method: "GET"
       };
       const [, buffer] = await Application.scheduleRequest(request);
-      const result = await Application.executeInWebView({
-        source: {
-          html: Application.arrayBufferToUTF8String(buffer),
-          baseUrl: AS_DOMAIN,
-          loadCSS: false,
-          loadImages: false
-        },
-        inject: `const array = Array.from(document.querySelectorAll('img[alt*="chapter"]'));const imgSrcArray = Array.from(array).map(img => img.src); return imgSrcArray;`,
-        storage: { cookies: [] }
+      const $2 = load(Application.arrayBufferToUTF8String(buffer));
+      const scripts = $2("script").toArray().filter((script) => $2(script).text().includes("self.__next_f.push")).map((script) => $2(script).text()).join("");
+      const re = /\\"pages\\":(\[.*?\])/;
+      const match = scripts.match(re);
+      if (!match) {
+        throw new Error(
+          `Could not parse page data for chapter ${chapter.chapNum}`
+        );
+      }
+      const json = JSON.parse(match[1].replaceAll('\\"', '"'));
+      const pages = json.map((value) => {
+        return value.url;
       });
-      const pages = result.result;
       return {
         mangaId: chapter.sourceManga.mangaId,
         id: chapter.chapterId,
@@ -17137,6 +17148,11 @@ var source = (() => {
       }
     }
     async getSearchTags() {
+      let tags = Application.getState("tags");
+      if (tags !== void 0) {
+        console.log("bypassing web request");
+        return tags;
+      }
       try {
         const request = {
           url: new URLBuilder2(AS_API_DOMAIN).addPath("api").addPath("series").addPath("filters").build(),
@@ -17147,7 +17163,9 @@ var source = (() => {
           Application.arrayBufferToUTF8String(buffer)
         );
         await setFilters(data2);
-        return parseTags(data2);
+        tags = parseTags(data2);
+        Application.setState(tags, "tags");
+        return tags;
       } catch (error) {
         throw new Error(error);
       }
