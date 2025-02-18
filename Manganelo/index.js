@@ -2358,53 +2358,6 @@ var source = (() => {
     }
   });
 
-  // node_modules/@paperback/types/lib/impl/AutoUpdatingSourceMangaWrapper.js
-  var require_AutoUpdatingSourceMangaWrapper = __commonJS({
-    "node_modules/@paperback/types/lib/impl/AutoUpdatingSourceMangaWrapper.js"(exports) {
-      "use strict";
-      init_buffer();
-      Object.defineProperty(exports, "__esModule", { value: true });
-      exports.AutoUpdatingSourceMangaWrapper = AutoUpdatingSourceMangaWrapper;
-      function AutoUpdatingSourceMangaWrapper(target, config = {
-        interval: 7 * 24 * 60 * 60 * 1e3
-      }) {
-        return new Proxy(target, {
-          get(target2, property, _) {
-            switch (property) {
-              case "getMangaDetails": {
-                return async function(mangaId) {
-                  const sourceManga = await this.getMangaDetails(mangaId);
-                  sourceManga.mangaInfo.additionalInfo = {
-                    ...sourceManga.mangaInfo.additionalInfo ?? {},
-                    lastUpdated: (/* @__PURE__ */ new Date()).toJSON()
-                  };
-                  return sourceManga;
-                }.bind(target2);
-              }
-              case "getChapters": {
-                return async function(sourceManga, sinceDate) {
-                  const lastUpdated = new Date(sourceManga.mangaInfo.additionalInfo?.lastUpdated ?? "1970-01-01T00:00:00.000Z");
-                  if (Date.now() - lastUpdated.getTime() > config.interval) {
-                    const { mangaId: _2, ...partialSourceManga } = await this.getMangaDetails(sourceManga.mangaId);
-                    Object.assign(sourceManga, partialSourceManga);
-                    sourceManga.mangaInfo.additionalInfo = {
-                      ...sourceManga.mangaInfo.additionalInfo ?? {},
-                      lastUpdated: (/* @__PURE__ */ new Date()).toJSON()
-                    };
-                  }
-                  return this.getChapters(sourceManga, sinceDate);
-                }.bind(target2);
-              }
-              default: {
-                return target2[property];
-              }
-            }
-          }
-        });
-      }
-    }
-  });
-
   // node_modules/@paperback/types/lib/impl/FormState.js
   var require_FormState = __commonJS({
     "node_modules/@paperback/types/lib/impl/FormState.js"(exports) {
@@ -2488,7 +2441,6 @@ var source = (() => {
       __exportStar(require_BasicRateLimiter(), exports);
       __exportStar(require_CloudflareError(), exports);
       __exportStar(require_CookieStorageInterceptor(), exports);
-      __exportStar(require_AutoUpdatingSourceMangaWrapper(), exports);
       __exportStar(require_FormState(), exports);
     }
   });
@@ -2821,6 +2773,7 @@ var source = (() => {
     getChildren: () => getChildren,
     getElementById: () => getElementById,
     getElements: () => getElements,
+    getElementsByClassName: () => getElementsByClassName,
     getElementsByTagName: () => getElementsByTagName,
     getElementsByTagType: () => getElementsByTagType,
     getFeed: () => getFeed,
@@ -4251,7 +4204,7 @@ var source = (() => {
   }
   function find(test, nodes, recurse, limit) {
     const result = [];
-    const nodeStack = [nodes];
+    const nodeStack = [Array.isArray(nodes) ? nodes : [nodes]];
     const indexStack = [0];
     for (; ; ) {
       if (indexStack[0] >= nodeStack[0].length) {
@@ -4278,25 +4231,26 @@ var source = (() => {
     return nodes.find(test);
   }
   function findOne(test, nodes, recurse = true) {
-    let elem = null;
-    for (let i = 0; i < nodes.length && !elem; i++) {
-      const node = nodes[i];
-      if (!isTag2(node)) {
-        continue;
-      } else if (test(node)) {
-        elem = node;
-      } else if (recurse && node.children.length > 0) {
-        elem = findOne(test, node.children, true);
+    const searchedNodes = Array.isArray(nodes) ? nodes : [nodes];
+    for (let i = 0; i < searchedNodes.length; i++) {
+      const node = searchedNodes[i];
+      if (isTag2(node) && test(node)) {
+        return node;
+      }
+      if (recurse && hasChildren(node) && node.children.length > 0) {
+        const found = findOne(test, node.children, true);
+        if (found)
+          return found;
       }
     }
-    return elem;
+    return null;
   }
   function existsOne(test, nodes) {
-    return nodes.some((checked) => isTag2(checked) && (test(checked) || existsOne(test, checked.children)));
+    return (Array.isArray(nodes) ? nodes : [nodes]).some((node) => isTag2(node) && test(node) || hasChildren(node) && existsOne(test, node.children));
   }
   function findAll(test, nodes) {
     const result = [];
-    const nodeStack = [nodes];
+    const nodeStack = [Array.isArray(nodes) ? nodes : [nodes]];
     const indexStack = [0];
     for (; ; ) {
       if (indexStack[0] >= nodeStack[0].length) {
@@ -4308,11 +4262,9 @@ var source = (() => {
         continue;
       }
       const elem = nodeStack[0][indexStack[0]++];
-      if (!isTag2(elem))
-        continue;
-      if (test(elem))
+      if (isTag2(elem) && test(elem))
         result.push(elem);
-      if (elem.children.length > 0) {
+      if (hasChildren(elem) && elem.children.length > 0) {
         indexStack.unshift(0);
         nodeStack.unshift(elem.children);
       }
@@ -4374,6 +4326,9 @@ var source = (() => {
   }
   function getElementsByTagName(tagName, nodes, recurse = true, limit = Infinity) {
     return filter(Checks["tag_name"](tagName), nodes, recurse, limit);
+  }
+  function getElementsByClassName(className, nodes, recurse = true, limit = Infinity) {
+    return filter(getAttribCheck("class", className), nodes, recurse, limit);
   }
   function getElementsByTagType(type, nodes, recurse = true, limit = Infinity) {
     return filter(Checks["tag_type"](type), nodes, recurse, limit);

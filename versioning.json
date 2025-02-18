@@ -1,12 +1,12 @@
 {
-  "buildTime": "2025-02-18T17:01:48.002Z",
+  "buildTime": "2025-02-18T23:13:07.869Z",
   "builtWith": {
-    "toolchain": "1.0.0-alpha.34",
-    "types": "1.0.0-alpha.34"
+    "toolchain": "1.0.0-alpha.35",
+    "types": "1.0.0-alpha.35"
   },
   "repository": {
-    "description": "An extension repository for Paperback",
-    "name": "Paperback Extension Repository"
+    "name": "General Extensions",
+    "description": "Paperback extensions for websites with unique, non-generic/template layouts. Maintained by the Paperback Community."
   },
   "sources": [
     {
@@ -25,23 +25,6 @@
         }
       ],
       "id": "AsuraScans"
-    },
-    {
-      "name": "Asura Scans Free",
-      "description": "The asurascansfree.com extension.",
-      "version": "1.0.0-alpha.1",
-      "icon": "icon.png",
-      "language": "en",
-      "contentRating": "MATURE",
-      "badges": [],
-      "capabilities": 85,
-      "developers": [
-        {
-          "name": "nyzzik",
-          "github": "https://github.com/nyzzik"
-        }
-      ],
-      "id": "AsuraScansFree"
     },
     {
       "icon": "icon.png",

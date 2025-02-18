@@ -2358,53 +2358,6 @@ var source = (() => {
     }
   });
 
-  // node_modules/@paperback/types/lib/impl/AutoUpdatingSourceMangaWrapper.js
-  var require_AutoUpdatingSourceMangaWrapper = __commonJS({
-    "node_modules/@paperback/types/lib/impl/AutoUpdatingSourceMangaWrapper.js"(exports) {
-      "use strict";
-      init_buffer();
-      Object.defineProperty(exports, "__esModule", { value: true });
-      exports.AutoUpdatingSourceMangaWrapper = AutoUpdatingSourceMangaWrapper;
-      function AutoUpdatingSourceMangaWrapper(target, config = {
-        interval: 7 * 24 * 60 * 60 * 1e3
-      }) {
-        return new Proxy(target, {
-          get(target2, property, _) {
-            switch (property) {
-              case "getMangaDetails": {
-                return async function(mangaId) {
-                  const sourceManga = await this.getMangaDetails(mangaId);
-                  sourceManga.mangaInfo.additionalInfo = {
-                    ...sourceManga.mangaInfo.additionalInfo ?? {},
-                    lastUpdated: (/* @__PURE__ */ new Date()).toJSON()
-                  };
-                  return sourceManga;
-                }.bind(target2);
-              }
-              case "getChapters": {
-                return async function(sourceManga, sinceDate) {
-                  const lastUpdated = new Date(sourceManga.mangaInfo.additionalInfo?.lastUpdated ?? "1970-01-01T00:00:00.000Z");
-                  if (Date.now() - lastUpdated.getTime() > config.interval) {
-                    const { mangaId: _2, ...partialSourceManga } = await this.getMangaDetails(sourceManga.mangaId);
-                    Object.assign(sourceManga, partialSourceManga);
-                    sourceManga.mangaInfo.additionalInfo = {
-                      ...sourceManga.mangaInfo.additionalInfo ?? {},
-                      lastUpdated: (/* @__PURE__ */ new Date()).toJSON()
-                    };
-                  }
-                  return this.getChapters(sourceManga, sinceDate);
-                }.bind(target2);
-              }
-              default: {
-                return target2[property];
-              }
-            }
-          }
-        });
-      }
-    }
-  });
-
   // node_modules/@paperback/types/lib/impl/FormState.js
   var require_FormState = __commonJS({
     "node_modules/@paperback/types/lib/impl/FormState.js"(exports) {
@@ -2488,7 +2441,6 @@ var source = (() => {
       __exportStar(require_BasicRateLimiter(), exports);
       __exportStar(require_CloudflareError(), exports);
       __exportStar(require_CookieStorageInterceptor(), exports);
-      __exportStar(require_AutoUpdatingSourceMangaWrapper(), exports);
       __exportStar(require_FormState(), exports);
     }
   });
